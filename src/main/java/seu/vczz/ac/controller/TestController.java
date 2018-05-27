@@ -4,6 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import seu.vczz.ac.common.ServerResponse;
+
 
 /**
  * CREATE by vczz on 2018/5/27
@@ -14,10 +16,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Slf4j
 public class TestController {
 
-    @RequestMapping(value = "/hello")
+    @RequestMapping(value = "/hello.json")
     @ResponseBody
-    public String test(){
+    public ServerResponse test(){
         log.info("--------------------hello----------------------");
-        return "hello fuck you";
+        return ServerResponse.createBySuccessMessage("hello fuck you");
     }
 }

@@ -1,5 +1,7 @@
 package seu.vczz.ac.model;
 
+import java.util.Date;
+
 public class SysLogWithBLOBs extends SysLog {
     private String oldValue;
 
