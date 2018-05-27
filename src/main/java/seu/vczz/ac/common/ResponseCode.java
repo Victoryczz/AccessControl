@@ -1,9 +1,12 @@
 package seu.vczz.ac.common;
 
+import lombok.Getter;
+
 /**
  * CREATE by vczz on 2018/5/27
  * 响应状态码,0表示成功、1表示失败、10表示需要登录、2表示参数错误
  */
+@Getter
 public enum ResponseCode {
 
     //枚举
@@ -20,12 +23,4 @@ public enum ResponseCode {
         this.desc = desc;
     }
 
-    //getCode
-    public int getCode(){
-        return code;
-    }
-    //getDesc
-    public String getDesc(){
-        return desc;
-    }
 }

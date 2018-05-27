@@ -2,6 +2,7 @@ package seu.vczz.ac.common;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.Getter;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -13,6 +14,7 @@ import java.util.Map;
  */
 //为空的字段不需要返回
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@Getter
 public class ServerResponse<T> implements Serializable{
 
     //状态量
@@ -42,17 +44,6 @@ public class ServerResponse<T> implements Serializable{
         this.data = data;
     }
 
-    public int getStatus() {
-        return status;
-    }
-
-    public String getMsg() {
-        return msg;
-    }
-
-    public T getData() {
-        return data;
-    }
     /**
      * 判断是否请求成功
      * 注解解决序列化时候该方法也会出现在json
