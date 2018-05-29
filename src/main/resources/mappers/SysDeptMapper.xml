@@ -23,6 +23,7 @@
     from sys_dept
     where id = #{id,jdbcType=INTEGER}
   </select>
+
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from sys_dept
     where id = #{id,jdbcType=INTEGER}
@@ -140,4 +141,38 @@
       operate_ip = #{operateIp,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+  <select id="selectAllDept" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List" />
+    from sys_dept
+  </select>
+
+  <select id="getChildDeptListByLevel" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List" />
+    from sys_dept
+    WHERE level LIKE #{level} || '.%'
+  </select>
+  
+  <update id="batchUpdateLevel" parameterType="map">
+    <foreach collection="sysDeptList" item="sysDept" separator=";">
+      UPDATE sys_dept
+      SET level = #{sysDept.level}
+      WHERE id = #{sysDept.id}
+    </foreach>
+  </update>
+
+  <select id="countByNameAndParentId" resultType="int" parameterType="map">
+    SELECT COUNT(1)
+    FROM sys_dept
+    WHERE name = #{name}
+    <if test="parentId != null">
+      and parent_id = #{parentId}
+    </if>
+    <if test="id != null">
+      and id != #{id}
+    </if>
+  </select>
+
 </mapper>
