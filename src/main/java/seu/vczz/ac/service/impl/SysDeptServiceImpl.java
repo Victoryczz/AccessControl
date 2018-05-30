@@ -5,12 +5,14 @@ import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import seu.vczz.ac.common.RequestHolder;
 import seu.vczz.ac.dao.SysDeptMapper;
 import seu.vczz.ac.exception.ParamException;
 import seu.vczz.ac.model.SysDept;
 import seu.vczz.ac.param.DeptParam;
 import seu.vczz.ac.service.ISysDeptService;
 import seu.vczz.ac.util.BeanValidatorUtil;
+import seu.vczz.ac.util.IpUtil;
 import seu.vczz.ac.util.LevelUtil;
 import java.util.Date;
 import java.util.List;
@@ -40,9 +42,9 @@ public class SysDeptServiceImpl implements ISysDeptService {
                 .seq(deptParam.getSeq()).remark(deptParam.getRemark()).build();
         //父部门的level+父部门id就是新的level
         dept.setLevel(LevelUtil.calculateLevel(getParentLevel(deptParam.getParentId()), deptParam.getParentId().toString()));
-        //插入
-        dept.setOperator("system");//todo
-        dept.setOperateIp("127.0.0.1");//todo
+        //从threadlocal中取到用户，因为在访问该controller的方法之前，已经放了user，所以能取到
+        dept.setOperator(RequestHolder.getCurrentUser().getUsername());
+        dept.setOperateIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
         dept.setOperateTime(new Date());
         sysDeptMapper.insertSelective(dept);
     }
@@ -77,8 +79,8 @@ public class SysDeptServiceImpl implements ISysDeptService {
         SysDept after = SysDept.builder().id(deptParam.getId()).name(deptParam.getName()).parentId(deptParam.getParentId())
                 .seq(deptParam.getSeq()).remark(deptParam.getRemark()).build();
         after.setLevel(LevelUtil.calculateLevel(getParentLevel(deptParam.getParentId()), deptParam.getParentId().toString()));
-        after.setOperator("system-update");//todo
-        after.setOperateIp("127.0.0.1");//todo
+        after.setOperator(RequestHolder.getCurrentUser().getUsername());
+        after.setOperateIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
         after.setOperateTime(new Date());
         //使用事务更新，如果更新了当前部门，则子部门需要同时更新
         updateWithChild(before, after);

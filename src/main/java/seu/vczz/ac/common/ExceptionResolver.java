@@ -3,6 +3,7 @@ package seu.vczz.ac.common;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
+import seu.vczz.ac.exception.ParamException;
 import seu.vczz.ac.exception.PermissionException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -31,6 +32,11 @@ public class ExceptionResolver implements HandlerExceptionResolver{
                 ServerResponse serverResponse = ServerResponse.createByErrorMessage(e.getMessage());
                 //注意 jsonView是我们的springMVC-servlet中定义的view
                 modelAndView = new ModelAndView("jsonView", serverResponse.toMap());
+            }else if (e instanceof ParamException){
+                //如果是我们自己定义的异常
+                ServerResponse serverResponse = ServerResponse.createByErrorMessage(e.getMessage());
+                //注意 jsonView是我们的springMVC-servlet中定义的view
+                modelAndView = new ModelAndView("jsonView", serverResponse.toMap());
             }else {
                 log.error("unknown json exception, url:{}, exception:{}", url, e);
                 //否则是默认的异常信息
@@ -42,6 +48,11 @@ public class ExceptionResolver implements HandlerExceptionResolver{
             ServerResponse serverResponse = ServerResponse.createByErrorMessage(defaultMsg);
             //注意请求的是页面，所以我们需要定义一个异常页面来处理
             modelAndView = new ModelAndView("exception", serverResponse.toMap());
+        }else if (e instanceof ParamException){
+            //如果是我们自己定义的异常
+            ServerResponse serverResponse = ServerResponse.createByErrorMessage(e.getMessage());
+            //注意 jsonView是我们的springMVC-servlet中定义的view
+            modelAndView = new ModelAndView("jsonView", serverResponse.toMap());
         }else {
             log.error("unknown page exception, url:{}, exception:{}", url, e);
             //否则所有的都走jsonView处理

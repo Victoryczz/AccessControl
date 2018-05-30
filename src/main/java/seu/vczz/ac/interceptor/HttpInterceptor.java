@@ -3,6 +3,7 @@ package seu.vczz.ac.interceptor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+import seu.vczz.ac.common.RequestHolder;
 import seu.vczz.ac.util.JsonUtil;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -33,7 +34,7 @@ public class HttpInterceptor extends HandlerInterceptorAdapter{
 //        long start = (Long) request.getAttribute(START_TIME);
 //        long end = System.currentTimeMillis();
 //        log.info("request finished. url:{}, cost:{}", url, end - start);
-//        removeThreadLocalInfo();
+          removeThreadLocalInfo();
     }
 
     @Override
@@ -43,10 +44,10 @@ public class HttpInterceptor extends HandlerInterceptorAdapter{
         long end = System.currentTimeMillis();
         log.info("request completed. url:{}, cost:{}ms", url, end - start);
 
-//      removeThreadLocalInfo();
+        removeThreadLocalInfo();
     }
 
-    /*public void removeThreadLocalInfo() {
-        RequestHolder.remove();;
-    }*/
+    public void removeThreadLocalInfo() {
+        RequestHolder.remove();
+    }
 }
