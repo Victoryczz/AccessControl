@@ -1,5 +1,6 @@
 package seu.vczz.ac.service;
 
+import seu.vczz.ac.dto.AclModuleLevelDto;
 import seu.vczz.ac.dto.DeptLevelDto;
 
 import java.util.List;
@@ -15,4 +16,9 @@ public interface ISysTreeService {
      * @return
      */
     List<DeptLevelDto> deptTree();
+    /**
+     * 权限模块树
+     * @return
+     */
+    List<AclModuleLevelDto> aclModuleTree();
 }

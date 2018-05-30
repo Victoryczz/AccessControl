@@ -1,7 +1,10 @@
 package seu.vczz.ac.model;
 
+import lombok.Builder;
+
 import java.util.Date;
 
+@Builder
 public class SysAclModule {
     private Integer id;
 

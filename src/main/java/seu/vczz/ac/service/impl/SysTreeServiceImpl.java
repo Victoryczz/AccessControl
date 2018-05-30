@@ -6,8 +6,11 @@ import com.google.common.collect.Multimap;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import seu.vczz.ac.dao.SysAclModuleMapper;
 import seu.vczz.ac.dao.SysDeptMapper;
+import seu.vczz.ac.dto.AclModuleLevelDto;
 import seu.vczz.ac.dto.DeptLevelDto;
+import seu.vczz.ac.model.SysAclModule;
 import seu.vczz.ac.model.SysDept;
 import seu.vczz.ac.service.ISysTreeService;
 import seu.vczz.ac.util.LevelUtil;
@@ -23,6 +26,8 @@ public class SysTreeServiceImpl implements ISysTreeService {
 
     @Autowired
     private SysDeptMapper sysDeptMapper;
+    @Autowired
+    private SysAclModuleMapper sysAclModuleMapper;
 
     /**
      * 部门层级树
@@ -91,7 +96,69 @@ public class SysTreeServiceImpl implements ISysTreeService {
             return o1.getSeq() - o2.getSeq();
         }
     };
+    //aclModule的seq比较
+    private Comparator<AclModuleLevelDto> aclModuleComparator = new Comparator<AclModuleLevelDto>() {
+        @Override
+        public int compare(AclModuleLevelDto o1, AclModuleLevelDto o2) {
+            return o1.getSeq() - o2.getSeq();
+        }
+    };
+    /**
+     * 权限模块树
+     * @return
+     */
+    public List<AclModuleLevelDto> aclModuleTree(){
+        //取出所有的aclModule
+        List<SysAclModule> aclModuleList = sysAclModuleMapper.selectAllAclModule();
+        List<AclModuleLevelDto> dtoList = Lists.newArrayList();
 
+        for (SysAclModule sysAclModule : aclModuleList){
+            AclModuleLevelDto dto = AclModuleLevelDto.adapt(sysAclModule);
+            dtoList.add(dto);
+        }
+        return aclModuleListToTree(dtoList);
+    }
+    //转换
+    private List<AclModuleLevelDto> aclModuleListToTree(List<AclModuleLevelDto> dtoList){
+        if (CollectionUtils.isEmpty(dtoList)){
+            //如果参数为空
+            return Lists.newArrayList();
+        }
+        Multimap<String, AclModuleLevelDto> levelAclModDtoMap = ArrayListMultimap.create();
+        //创建根级的level-->dto
+        List<AclModuleLevelDto> rootDtoList = Lists.newArrayList();
+        for (AclModuleLevelDto dto : dtoList){
+            levelAclModDtoMap.put(dto.getLevel(), dto);
+            if (dto.getLevel().equals(LevelUtil.ROOT)){
+                rootDtoList.add(dto);
+            }
+        }
+        //先将跟排序
+        Collections.sort(rootDtoList, aclModuleComparator);
+
+        transfromAclModuleTree(rootDtoList, LevelUtil.ROOT, levelAclModDtoMap);
+        return rootDtoList;
+    }
+    //递归处理
+    private void transfromAclModuleTree(List<AclModuleLevelDto> dtoList, String level, Multimap<String, AclModuleLevelDto> levelDeptMap){
+        for (int i = 0; i < dtoList.size(); i++){
+            //遍历该级下的每个部门，递归处理
+            AclModuleLevelDto aclModuleLevelDto = dtoList.get(i);
+            //处理当前层级的数据
+            String nextLevel = LevelUtil.calculateLevel(aclModuleLevelDto.getLevel(), aclModuleLevelDto.getId().toString());
+            //处理下一层
+            List<AclModuleLevelDto> tempDeptDtoList = (List<AclModuleLevelDto>) levelDeptMap.get(nextLevel);
+            if (CollectionUtils.isNotEmpty(tempDeptDtoList)){
+                //如果不是空，就处理下一级
+                //排序
+                Collections.sort(tempDeptDtoList, aclModuleComparator);
+                //设置dto
+                aclModuleLevelDto.setAclModuleList(tempDeptDtoList);
+                //递归
+                transfromAclModuleTree(tempDeptDtoList, nextLevel, levelDeptMap);
+            }
+        }
+    }
 
 
 
