@@ -113,7 +113,7 @@ public class SysDeptServiceImpl implements ISysDeptService {
             }
         }
         //最后更新自己
-        sysDeptMapper.updateByPrimaryKey(after);
+        sysDeptMapper.updateByPrimaryKeySelective(after);
     }
 
 

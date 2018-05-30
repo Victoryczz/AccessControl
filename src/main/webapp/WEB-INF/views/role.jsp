@@ -268,7 +268,7 @@
                 },
                 type: 'POST',
                 success: function (result) {
-                    if (result.ret) {
+                    if (result.status == 0) {
                         renderRoleTree(result.data);
                     } else {
                         showMessage("加载角色权限数据", result.msg, false);
@@ -382,7 +382,7 @@
                 },
                 type: 'POST',
                 success: function (result) {
-                    if (result.ret) {
+                    if (result.status == 0) {
                         showMessage("保存角色与权限点的关系", "操作成功", false);
                     } else {
                         showMessage("保存角色与权限点的关系", result.msg, false);
@@ -397,7 +397,7 @@
                 data: $("#roleForm").serializeArray(),
                 type: 'POST',
                 success: function(result) {
-                    if (result.ret) {
+                    if (result.status == 0) {
                         loadRoleList();
                         if (successCallback) {
                             successCallback(result);
@@ -432,7 +432,7 @@
                 },
                 type: 'POST',
                 success: function (result) {
-                    if (result.ret) {
+                    if (result.status == 0) {
                         var renderedSelect = Mustache.render(selectedUsersTemplate, {userList: result.data.selected});
                         var renderedUnSelect = Mustache.render(unSelectedUsersTemplate, {userList: result.data.unselected});
                         $("#roleUserList").html(renderedSelect + renderedUnSelect);
@@ -468,7 +468,7 @@
                 },
                 type: 'POST',
                 success: function (result) {
-                    if (result.ret) {
+                    if (result.status == 0) {
                         showMessage("保存角色与用户的关系", "操作成功", false);
                     } else {
                         showMessage("保存角色与用户的关系", result.msg, false);
