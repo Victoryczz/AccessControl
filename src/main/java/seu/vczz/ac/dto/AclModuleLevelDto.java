@@ -16,8 +16,10 @@ import java.util.List;
 @Getter
 @ToString
 public class AclModuleLevelDto extends SysAclModule{
-
+    //权限模块列表
     private List<AclModuleLevelDto> aclModuleList = Lists.newArrayList();
+    //权限点列表
+    private List<AclDto> aclList = Lists.newArrayList();
 
     /**
      * 装配

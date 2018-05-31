@@ -303,7 +303,7 @@
             if (aclModuleList && aclModuleList.length > 0) {
                 $(aclModuleList).each(function(i, aclModule) {
                     var hasChecked = false;
-                    if (aclModule.aclList && aclModule.aclList.length > 0) {
+                    if (aclModule.aclList && aclModule.aclList.length >= 0) {
                         $(aclModule.aclList).each(function(i, acl) {
                             zTreeObj.push({
                                 id: aclPrefix + acl.id,
@@ -318,7 +318,7 @@
                             }
                         });
                     }
-                    if ((aclModule.aclModuleList && aclModule.aclModuleList.length > 0) ||
+                    if ((aclModule.aclModuleList && aclModule.aclModuleList.length >= 0) ||
                         (aclModule.aclList && aclModule.aclList.length > 0)) {
                         nodeMap[modulePrefix + aclModule.id] = {
                             id : modulePrefix + aclModule.id,

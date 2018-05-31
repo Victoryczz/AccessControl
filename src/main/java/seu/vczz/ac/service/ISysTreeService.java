@@ -21,4 +21,11 @@ public interface ISysTreeService {
      * @return
      */
     List<AclModuleLevelDto> aclModuleTree();
+    /**
+     * 角色权限树，根据角色id获取角色权限树
+     * 思想是取出所有的权限模块树，然后拥有的权限就是选中状态
+     * @param roleId
+     * @return
+     */
+    List<AclModuleLevelDto> roleAclTree(Integer roleId);
 }

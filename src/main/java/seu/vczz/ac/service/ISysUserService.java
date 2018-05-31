@@ -5,6 +5,8 @@ import seu.vczz.ac.beans.PageResult;
 import seu.vczz.ac.model.SysUser;
 import seu.vczz.ac.param.UserParam;
 
+import java.util.List;
+
 /**
  * CREATE by vczz on 2018/5/29
  * 用户service
@@ -36,5 +38,10 @@ public interface ISysUserService {
      * @return
      */
     PageResult<SysUser> getPageByDeptId(int deptId, PageQuery pageQuery);
+    /**
+     * 获取所有用户
+     * @return
+     */
+    List<SysUser> getAllUser();
 
 }

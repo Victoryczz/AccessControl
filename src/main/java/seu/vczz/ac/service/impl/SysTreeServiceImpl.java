@@ -6,17 +6,20 @@ import com.google.common.collect.Multimap;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import seu.vczz.ac.dao.SysAclMapper;
 import seu.vczz.ac.dao.SysAclModuleMapper;
 import seu.vczz.ac.dao.SysDeptMapper;
+import seu.vczz.ac.dto.AclDto;
 import seu.vczz.ac.dto.AclModuleLevelDto;
 import seu.vczz.ac.dto.DeptLevelDto;
+import seu.vczz.ac.model.SysAcl;
 import seu.vczz.ac.model.SysAclModule;
 import seu.vczz.ac.model.SysDept;
+import seu.vczz.ac.service.ISysCoreService;
 import seu.vczz.ac.service.ISysTreeService;
 import seu.vczz.ac.util.LevelUtil;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * CREATE by vczz on 2018/5/28
@@ -28,6 +31,10 @@ public class SysTreeServiceImpl implements ISysTreeService {
     private SysDeptMapper sysDeptMapper;
     @Autowired
     private SysAclModuleMapper sysAclModuleMapper;
+    @Autowired
+    private ISysCoreService iSysCoreService;
+    @Autowired
+    private SysAclMapper sysAclMapper;
 
     /**
      * 部门层级树
@@ -160,6 +167,75 @@ public class SysTreeServiceImpl implements ISysTreeService {
         }
     }
 
-
-
+    /**
+     * 角色权限树，根据角色id获取角色权限树
+     * 思想是取出所有的权限模块树，然后拥有的权限就是选中状态
+     * @param roleId
+     * @return
+     */
+    public List<AclModuleLevelDto> roleAclTree(Integer roleId){
+        //1. 当前用户已分配权限点
+        List<SysAcl> userAclList = iSysCoreService.getCurrentUserAclList();
+        //2. 当前角色已分配权限点
+        List<SysAcl> roleAclList = iSysCoreService.getRoleAclList(roleId);
+        //3. 当前系统所有的权限点dto
+        List<AclDto> aclDtoList = Lists.newArrayList();
+        //将用户权限点id/角色权限点id放在集合
+        Set<Integer> userAclIdSet = userAclList.stream().map(sysAcl -> sysAcl.getId()).collect(Collectors.toSet());
+        Set<Integer> roleAclIdSet = roleAclList.stream().map(sysAcl -> sysAcl.getId()).collect(Collectors.toSet());
+        //取到所有权限点
+        List<SysAcl> allAclList = sysAclMapper.getAll();
+        for (SysAcl acl : allAclList){
+            //遍历，适配成acldto
+            AclDto aclDto = AclDto.adapt(acl);
+            if (userAclIdSet.contains(acl.getId())){
+                //如果用户aclIdList有该acl的id,则将dto的属性she为true
+                aclDto.setHasAcl(true);
+            }
+            if (roleAclIdSet.contains(acl.getId())){
+                aclDto.setChecked(true);
+            }
+            aclDtoList.add(aclDto);
+        }
+        return aclListToTree(aclDtoList);
+    }
+    //将aclDtoList放入aclModuleLevelDto
+    private List<AclModuleLevelDto> aclListToTree(List<AclDto> aclDtoList){
+        if (CollectionUtils.isEmpty(aclDtoList)){
+            return Lists.newArrayList();
+        }
+        //1.拿到aclModuleTree
+        List<AclModuleLevelDto> aclModuleDtoList = aclModuleTree();
+        //map  key:aclModuleId--->value:List<AclDto> aclDtoList
+        Multimap<Integer, AclDto> moduleIdAclMap = ArrayListMultimap.create();
+        for (AclDto aclDto : aclDtoList){
+            if (aclDto.getStatus() == 1){
+                moduleIdAclMap.put(aclDto.getAclModuleId(), aclDto);
+            }
+        }
+        bindAclModuleWithAcls(aclModuleDtoList, moduleIdAclMap);
+        return aclModuleDtoList;
+    }
+    //将aclModule与acl绑定
+    private void bindAclModuleWithAcls(List<AclModuleLevelDto> aclModuleDtoList, Multimap<Integer, AclDto> moduleIdAclMap){
+        if (CollectionUtils.isEmpty(aclModuleDtoList)){
+            return;
+        }
+        for (AclModuleLevelDto aclModuleDto : aclModuleDtoList){
+            List<AclDto> aclDtoList = (List<AclDto>) moduleIdAclMap.get(aclModuleDto.getId());
+            if (CollectionUtils.isNotEmpty(aclDtoList)){
+                Collections.sort(aclDtoList, aclSeqComparator);
+                aclModuleDto.setAclList(aclDtoList);
+            }
+            //递归
+            bindAclModuleWithAcls(aclModuleDto.getAclModuleList(), moduleIdAclMap);
+        }
+    }
+    //comparator
+    private Comparator<AclDto> aclSeqComparator = new Comparator<AclDto>() {
+        @Override
+        public int compare(AclDto o1, AclDto o2) {
+            return o1.getSeq() - o2.getSeq();
+        }
+    };
 }

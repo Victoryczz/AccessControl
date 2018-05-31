@@ -202,5 +202,14 @@
     SELECT <include refid="Base_Column_List"/>
     FROM sys_acl
   </select>
+  <select id="getAclListByIdList" parameterType="map" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List"/>
+    FROM sys_acl
+    WHERE id IN
+    <foreach collection="idList" open="(" close=")" separator="," item="id">
+      #{id}
+    </foreach>
+  </select>
 
 </mapper>

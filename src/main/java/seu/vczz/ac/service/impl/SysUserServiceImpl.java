@@ -128,4 +128,11 @@ public class SysUserServiceImpl implements ISysUserService {
         return PageResult.<SysUser>builder().build();
     }
 
+    /**
+     * 获取所有用户
+     * @return
+     */
+    public List<SysUser> getAllUser(){
+        return sysUserMapper.getAllUser();
+    }
 }

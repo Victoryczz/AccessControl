@@ -1,6 +1,8 @@
 package seu.vczz.ac.dao;
 
+import org.apache.ibatis.annotations.Param;
 import seu.vczz.ac.model.SysRoleUser;
+import java.util.List;
 
 public interface SysRoleUserMapper {
     int deleteByPrimaryKey(Integer id);
@@ -14,4 +16,12 @@ public interface SysRoleUserMapper {
     int updateByPrimaryKeySelective(SysRoleUser record);
 
     int updateByPrimaryKey(SysRoleUser record);
+
+    List<Integer> getRoleIdListByUserId(@Param("userId")Integer userId);
+
+    List<Integer> getUserIdListByRoleId(@Param("roleId")Integer roleId);
+
+    void deleteByRoleId(@Param("roleId")Integer roleId);
+
+    void batchInsert(@Param("roleUserList")List<SysRoleUser> roleUserList);
 }
