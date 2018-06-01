@@ -2,11 +2,13 @@ package seu.vczz.ac.service.impl;
 
 import com.google.common.base.Preconditions;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import seu.vczz.ac.common.RequestHolder;
 import seu.vczz.ac.dao.SysDeptMapper;
+import seu.vczz.ac.dao.SysUserMapper;
 import seu.vczz.ac.exception.ParamException;
 import seu.vczz.ac.model.SysDept;
 import seu.vczz.ac.param.DeptParam;
@@ -14,6 +16,8 @@ import seu.vczz.ac.service.ISysDeptService;
 import seu.vczz.ac.util.BeanValidatorUtil;
 import seu.vczz.ac.util.IpUtil;
 import seu.vczz.ac.util.LevelUtil;
+
+import java.lang.reflect.Parameter;
 import java.util.Date;
 import java.util.List;
 
@@ -25,6 +29,8 @@ public class SysDeptServiceImpl implements ISysDeptService {
 
     @Autowired
     private SysDeptMapper sysDeptMapper;
+    @Autowired
+    private SysUserMapper sysUserMapper;
 
     /**
      * 新增保存部门
@@ -114,6 +120,27 @@ public class SysDeptServiceImpl implements ISysDeptService {
         }
         //最后更新自己
         sysDeptMapper.updateByPrimaryKeySelective(after);
+    }
+
+    /**
+     * 删除部门
+     * @param deptId
+     */
+    public void delete(Integer deptId){
+        SysDept dept = sysDeptMapper.selectByPrimaryKey(deptId);
+        Preconditions.checkNotNull(dept, "待删除的部门不存在");
+
+        //1.查询有没有子部门
+        if (sysDeptMapper.countByParentId(deptId) > 0){
+            throw new ParamException("当前删除部门下存在子部门");
+        }
+        //2.查询有没有用户
+        if (sysUserMapper.countByDeptId(deptId) > 0){
+            throw new ParamException("当前删除部门下存在用户");
+        }
+        //即不存在用户，也不存在部门就删除
+        sysDeptMapper.deleteByPrimaryKey(deptId);
+
     }
 
 

@@ -11,6 +11,7 @@ import seu.vczz.ac.common.ServerResponse;
 import seu.vczz.ac.dto.AclModuleLevelDto;
 import seu.vczz.ac.param.AclModuleParam;
 import seu.vczz.ac.service.ISysAclModuleService;
+import seu.vczz.ac.service.ISysCoreService;
 import seu.vczz.ac.service.ISysTreeService;
 import java.util.List;
 
@@ -77,7 +78,7 @@ public class SysAclModuleController {
     @RequestMapping(value = "/delete.json")
     @ResponseBody
     public ServerResponse delete(@RequestParam("id") Integer id){
-        //todo
+        iSysAclModuleService.delete(id);
         return ServerResponse.createBySuccess();
     }
 

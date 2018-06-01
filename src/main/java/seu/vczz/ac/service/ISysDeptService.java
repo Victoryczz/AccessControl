@@ -17,5 +17,10 @@ public interface ISysDeptService {
      * @param deptParam
      */
     void update(DeptParam deptParam);
+    /**
+     * 删除部门
+     * @param deptId
+     */
+    void delete(Integer deptId);
 
 }

@@ -77,4 +77,6 @@ public class SysRoleServiceImpl implements ISysRoleService {
     public List<SysRole> getAll(){
         return sysRoleMapper.getAll();
     }
+
+
 }

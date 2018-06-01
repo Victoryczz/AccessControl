@@ -26,4 +26,5 @@ public interface SysAclModuleMapper {
     List<SysAclModule> selectAllAclModule();
 
     int countByParentId(@Param("aclModuleId")int aclModuleId);
+
 }

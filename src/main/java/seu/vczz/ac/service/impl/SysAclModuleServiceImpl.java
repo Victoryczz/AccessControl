@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import seu.vczz.ac.common.RequestHolder;
+import seu.vczz.ac.dao.SysAclMapper;
 import seu.vczz.ac.dao.SysAclModuleMapper;
 import seu.vczz.ac.exception.ParamException;
 import seu.vczz.ac.model.SysAclModule;
@@ -14,6 +15,8 @@ import seu.vczz.ac.service.ISysAclModuleService;
 import seu.vczz.ac.util.BeanValidatorUtil;
 import seu.vczz.ac.util.IpUtil;
 import seu.vczz.ac.util.LevelUtil;
+
+import java.lang.reflect.Parameter;
 import java.util.Date;
 import java.util.List;
 
@@ -25,6 +28,8 @@ public class SysAclModuleServiceImpl implements ISysAclModuleService {
 
     @Autowired
     private SysAclModuleMapper sysAclModuleMapper;
+    @Autowired
+    private SysAclMapper sysAclMapper;
 
     /**
      * 新增保存权限模块信息
@@ -105,5 +110,24 @@ public class SysAclModuleServiceImpl implements ISysAclModuleService {
             }
         }
         sysAclModuleMapper.updateByPrimaryKeySelective(after);
+    }
+
+    /**
+     * 删除
+     * @param aclModuleId
+     */
+    public void delete(Integer aclModuleId){
+        SysAclModule aclModule = sysAclModuleMapper.selectByPrimaryKey(aclModuleId);
+        Preconditions.checkNotNull(aclModule, "待删除的全下模块不存在");
+        //1.看有没有子模块
+        if (sysAclModuleMapper.countByParentId(aclModuleId) > 0){
+            throw new ParamException("待删除权限模块存在子模块");
+        }
+        //2.看有没有权限点
+        if (sysAclMapper.countByAclModuleId(aclModuleId) > 0){
+            throw new ParamException("待删除权限模块下存在权限点");
+        }
+        //删除
+        sysAclModuleMapper.deleteByPrimaryKey(aclModuleId);
     }
 }

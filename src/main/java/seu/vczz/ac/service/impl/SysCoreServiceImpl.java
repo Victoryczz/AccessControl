@@ -2,13 +2,13 @@ package seu.vczz.ac.service.impl;
 
 import com.google.common.collect.Lists;
 import org.apache.commons.collections.CollectionUtils;
+import org.omg.CORBA.PRIVATE_MEMBER;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import seu.vczz.ac.common.RequestHolder;
-import seu.vczz.ac.dao.SysAclMapper;
-import seu.vczz.ac.dao.SysRoleAclMapper;
-import seu.vczz.ac.dao.SysRoleUserMapper;
+import seu.vczz.ac.dao.*;
 import seu.vczz.ac.model.SysAcl;
+import seu.vczz.ac.model.SysRole;
 import seu.vczz.ac.model.SysUser;
 import seu.vczz.ac.service.ISysCoreService;
 import java.util.List;
@@ -25,6 +25,10 @@ public class SysCoreServiceImpl implements ISysCoreService {
     private SysRoleUserMapper sysRoleUserMapper;
     @Autowired
     private SysRoleAclMapper sysRoleAclMapper;
+    @Autowired
+    private SysRoleMapper sysRoleMapper;
+    @Autowired
+    private SysUserMapper sysUserMapper;
 
     /**
      * 获取当前用户权限点列表
@@ -34,8 +38,14 @@ public class SysCoreServiceImpl implements ISysCoreService {
         SysUser currentUser = RequestHolder.getCurrentUser();
         return getUserAclList(currentUser.getId());
     }
+
+    /**
+     * 根据用户id获取用户权限
+     * @param userId
+     * @return
+     */
     //根据用户id获取用户权限  用户-->角色-->权限
-    private List<SysAcl> getUserAclList(Integer userId){
+    public List<SysAcl> getUserAclList(Integer userId){
         if (isSuperAdmin(userId)){
             //如果是超级管理员，返回所有的权限点
             return sysAclMapper.getAll();
@@ -73,6 +83,47 @@ public class SysCoreServiceImpl implements ISysCoreService {
         }
         //2. 根据权限点id获取权限点
         return sysAclMapper.getAclListByIdList(roleAclIdList);
+    }
+
+    /**
+     * 根据userId获取已分配角色列表
+     * @param userId
+     * @return
+     */
+    public List<SysRole> getRoleListByUserId(int userId){
+        List<Integer> roleIdList = sysRoleUserMapper.getRoleIdListByUserId(userId);
+        List<SysRole> roleList = sysRoleMapper.getRoleListByIdList(roleIdList);
+        return roleList;
+    }
+
+    /**
+     * 根据权限点id获取已分配用户列表
+     * @param aclId
+     * @return
+     */
+    public List<SysUser> getUserListByAclId(Integer aclId){
+        List<Integer> roleIdList = sysRoleAclMapper.getRoleIdListByAclId(aclId);
+        if (CollectionUtils.isEmpty(roleIdList)){
+            return Lists.newArrayList();
+        }
+        List<Integer> userIdList = sysRoleUserMapper.getUserIdListByRoleIdList(roleIdList);
+        if (CollectionUtils.isEmpty(userIdList)){
+            return Lists.newArrayList();
+        }
+        return sysUserMapper.getUserByIdList(userIdList);
+    }
+
+    /**
+     * 根据aclId获取已分配角色
+     * @param aclId
+     * @return
+     */
+    public List<SysRole> getRoleListByAclId(Integer aclId){
+        List<Integer> roleIdList = sysRoleAclMapper.getRoleIdListByAclId(aclId);
+        if (CollectionUtils.isEmpty(roleIdList)){
+            return Lists.newArrayList();
+        }
+        return sysRoleMapper.getRoleListByIdList(roleIdList);
     }
 
 

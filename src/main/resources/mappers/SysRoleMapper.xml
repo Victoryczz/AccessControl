@@ -139,4 +139,13 @@
     SELECT <include refid="Base_Column_List" />
     FROM sys_role
   </select>
+  <select id="getRoleListByIdList" parameterType="map" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List"/>
+    FROM sys_role
+    WHERE id IN
+    <foreach collection="idList" separator="," open="(" close=")" item="id">
+      #{id}
+    </foreach>
+  </select>
 </mapper>

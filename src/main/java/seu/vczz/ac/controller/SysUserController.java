@@ -1,5 +1,6 @@
 package seu.vczz.ac.controller;
 
+import com.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,7 +11,10 @@ import seu.vczz.ac.beans.PageResult;
 import seu.vczz.ac.common.ServerResponse;
 import seu.vczz.ac.model.SysUser;
 import seu.vczz.ac.param.UserParam;
+import seu.vczz.ac.service.ISysCoreService;
+import seu.vczz.ac.service.ISysTreeService;
 import seu.vczz.ac.service.ISysUserService;
+import java.util.Map;
 
 /**
  * CREATE by vczz on 2018/5/29
@@ -22,6 +26,10 @@ public class SysUserController {
 
     @Autowired
     private ISysUserService iSysUserService;
+    @Autowired
+    private ISysTreeService iSysTreeService;
+    @Autowired
+    private ISysCoreService iSysCoreService;
 
     /**
      * 新增保存用户
@@ -58,6 +66,20 @@ public class SysUserController {
     public ServerResponse page(@RequestParam("deptId")int deptId, PageQuery pageQuery){
         PageResult<SysUser> pageResult = iSysUserService.getPageByDeptId(deptId, pageQuery);
         return ServerResponse.createBySuccess(pageResult);
+    }
+
+    /**
+     * 根据用户id获取用户权限树
+     * @param userId
+     * @return
+     */
+    @RequestMapping("acls.json")
+    @ResponseBody
+    public ServerResponse acls(@RequestParam("userId")int userId){
+        Map<String, Object> map = Maps.newHashMap();
+        map.put("acls", iSysTreeService.userAclTree(userId));
+        map.put("roles", iSysCoreService.getRoleListByUserId(userId));
+        return ServerResponse.createBySuccess(map);
     }
 
 

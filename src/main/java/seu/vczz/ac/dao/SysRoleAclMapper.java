@@ -3,6 +3,7 @@ package seu.vczz.ac.dao;
 import org.apache.ibatis.annotations.Param;
 import seu.vczz.ac.model.SysRoleAcl;
 
+import javax.swing.*;
 import java.util.List;
 
 public interface SysRoleAclMapper {
@@ -23,4 +24,6 @@ public interface SysRoleAclMapper {
     void deleteByRoleId(@Param("roleId")Integer roleId);
 
     void batchInsert(@Param("roleAclList")List<SysRoleAcl> roleAclList);
+
+    List<Integer> getRoleIdListByAclId(@Param("aclId")Integer aclId);
 }

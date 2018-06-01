@@ -18,6 +18,11 @@ public interface ISysAclModuleService {
      * @param aclModuleParam
      */
     void update(AclModuleParam aclModuleParam);
+    /**
+     * 删除
+     * @param aclModuleId
+     */
+    void delete(Integer aclModuleId);
 
 
 

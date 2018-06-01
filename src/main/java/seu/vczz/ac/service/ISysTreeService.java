@@ -28,4 +28,10 @@ public interface ISysTreeService {
      * @return
      */
     List<AclModuleLevelDto> roleAclTree(Integer roleId);
+    /**
+     * 根据用户id获取用户已分配权限树
+     * @param userId
+     * @return
+     */
+    List<AclModuleLevelDto> userAclTree(int userId);
 }

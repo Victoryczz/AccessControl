@@ -1,5 +1,6 @@
 package seu.vczz.ac.dao;
 
+import com.sun.xml.internal.xsom.impl.ListSimpleTypeImpl;
 import org.apache.ibatis.annotations.Param;
 import seu.vczz.ac.model.SysRole;
 
@@ -21,4 +22,6 @@ public interface SysRoleMapper {
     int countByRoleName(@Param("name")String name, @Param("id")Integer id);
 
     List<SysRole> getAll();
+
+    List<SysRole> getRoleListByIdList(@Param("idList")List<Integer> idList);
 }

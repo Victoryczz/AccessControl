@@ -3,7 +3,6 @@ package seu.vczz.ac.dao;
 import org.apache.ibatis.annotations.Param;
 import seu.vczz.ac.beans.PageQuery;
 import seu.vczz.ac.model.SysUser;
-
 import java.util.List;
 
 public interface SysUserMapper {
@@ -32,4 +31,5 @@ public interface SysUserMapper {
     List<SysUser> getUserByIdList(@Param("idList")List<Integer> idList);
 
     List<SysUser> getAllUser();
+
 }

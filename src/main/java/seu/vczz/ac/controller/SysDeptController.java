@@ -80,7 +80,7 @@ public class SysDeptController {
     @RequestMapping(value = "/delete.json")
     @ResponseBody
     public ServerResponse delete(@RequestParam("id") Integer id){
-        //todo
+        iSysDeptService.delete(id);
         return ServerResponse.createBySuccess();
     }
 
