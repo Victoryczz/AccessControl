@@ -1,6 +1,7 @@
 package seu.vczz.ac.controller;
 
 import com.google.common.collect.Maps;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,6 +16,8 @@ import seu.vczz.ac.param.UserParam;
 import seu.vczz.ac.service.ISysCoreService;
 import seu.vczz.ac.service.ISysTreeService;
 import seu.vczz.ac.service.ISysUserService;
+import seu.vczz.ac.util.JsonUtil;
+
 import java.util.Map;
 
 /**
@@ -23,6 +26,7 @@ import java.util.Map;
  */
 @RequestMapping(value = "/sys/user")
 @Controller
+@Slf4j
 public class SysUserController {
 
     @Autowired
@@ -79,6 +83,7 @@ public class SysUserController {
     public ServerResponse acls(@RequestParam("userId")int userId){
         Map<String, Object> map = Maps.newHashMap();
         map.put("acls", iSysTreeService.userAclTree(userId));
+        //log.info(JsonUtil.obj2StringPretty(iSysTreeService.userAclTree(userId)));
         map.put("roles", iSysCoreService.getRoleListByUserId(userId));
         return ServerResponse.createBySuccess(map);
     }

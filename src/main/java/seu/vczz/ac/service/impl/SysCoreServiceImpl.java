@@ -1,18 +1,19 @@
 package seu.vczz.ac.service.impl;
 
 import com.google.common.collect.Lists;
-import com.sun.org.apache.bcel.internal.generic.ReturnInstruction;
 import org.apache.commons.collections.CollectionUtils;
-import org.omg.CORBA.PRIVATE_MEMBER;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
+import seu.vczz.ac.common.CacheKeyConst;
 import seu.vczz.ac.common.RequestHolder;
 import seu.vczz.ac.dao.*;
 import seu.vczz.ac.model.SysAcl;
 import seu.vczz.ac.model.SysRole;
 import seu.vczz.ac.model.SysUser;
+import seu.vczz.ac.service.ISysCacheService;
 import seu.vczz.ac.service.ISysCoreService;
+import seu.vczz.ac.util.JsonUtil;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -33,6 +34,8 @@ public class SysCoreServiceImpl implements ISysCoreService {
     private SysRoleMapper sysRoleMapper;
     @Autowired
     private SysUserMapper sysUserMapper;
+    @Autowired
+    private ISysCacheService iSysCacheService;
 
     /**
      * 获取当前用户权限点列表
@@ -96,6 +99,9 @@ public class SysCoreServiceImpl implements ISysCoreService {
      */
     public List<SysRole> getRoleListByUserId(int userId){
         List<Integer> roleIdList = sysRoleUserMapper.getRoleIdListByUserId(userId);
+        if (CollectionUtils.isEmpty(roleIdList)){
+            return Lists.newArrayList();
+        }
         List<SysRole> roleList = sysRoleMapper.getRoleListByIdList(roleIdList);
         return roleList;
     }
@@ -146,7 +152,7 @@ public class SysCoreServiceImpl implements ISysCoreService {
             return true;
         }
         //当前用户已有权限点
-        List<SysAcl> userAclList = getUserAclList(RequestHolder.getCurrentUser().getId());
+        List<SysAcl> userAclList = getCurrentUserAclListFromCache();
         Set<Integer> userAclIdSet = userAclList.stream().map(acl -> acl.getId()).collect(Collectors.toSet());
         //变量，看是否存在一个有效的权限点
         boolean hasValidAcl = false;
@@ -168,7 +174,22 @@ public class SysCoreServiceImpl implements ISysCoreService {
             return true;
         }
         return false;
-
+    }
+    //从缓存中获取数据
+    private List<SysAcl> getCurrentUserAclListFromCache(){
+        Integer userId = RequestHolder.getCurrentUser().getId();
+        //查询缓存
+        String value = iSysCacheService.getCache(CacheKeyConst.USER_ACLS, userId.toString());
+        if (StringUtils.isEmpty(value)){
+            //缓存中没有，就从数据库中取，然后放到缓存中
+            List<SysAcl> userAclList = getUserAclList(userId);
+            if (CollectionUtils.isNotEmpty(userAclList)){
+                //放到缓存中,注意还有用户id
+                iSysCacheService.saveCache(CacheKeyConst.USER_ACLS, JsonUtil.obj2String(userAclList), 60*60, userId.toString());
+            }
+            return userAclList;
+        }
+        return JsonUtil.string2Obj(value, List.class, SysAcl.class);
     }
 
 
