@@ -47,4 +47,9 @@ public interface ISysCoreService {
      * @return
      */
     List<SysRole> getRoleListByAclId(Integer aclId);
+    /**
+     * 判断是否具有某个url的访问权限
+     * @return
+     */
+    boolean hasUrlAcl(String url);
 }

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 import seu.vczz.ac.beans.PageQuery;
 import seu.vczz.ac.beans.PageResult;
 import seu.vczz.ac.common.ServerResponse;
@@ -80,6 +81,15 @@ public class SysUserController {
         map.put("acls", iSysTreeService.userAclTree(userId));
         map.put("roles", iSysCoreService.getRoleListByUserId(userId));
         return ServerResponse.createBySuccess(map);
+    }
+
+    /**
+     * 没有权限访问
+     * @return
+     */
+    @RequestMapping("/noAuth.page")
+    public ModelAndView noAuth(){
+        return new ModelAndView("noAuth");
     }
 
 

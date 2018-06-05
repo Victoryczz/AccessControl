@@ -1,10 +1,12 @@
 package seu.vczz.ac.service.impl;
 
 import com.google.common.collect.Lists;
+import com.sun.org.apache.bcel.internal.generic.ReturnInstruction;
 import org.apache.commons.collections.CollectionUtils;
 import org.omg.CORBA.PRIVATE_MEMBER;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 import seu.vczz.ac.common.RequestHolder;
 import seu.vczz.ac.dao.*;
 import seu.vczz.ac.model.SysAcl;
@@ -12,6 +14,8 @@ import seu.vczz.ac.model.SysRole;
 import seu.vczz.ac.model.SysUser;
 import seu.vczz.ac.service.ISysCoreService;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * CREATE by vczz on 2018/5/31
@@ -124,6 +128,47 @@ public class SysCoreServiceImpl implements ISysCoreService {
             return Lists.newArrayList();
         }
         return sysRoleMapper.getRoleListByIdList(roleIdList);
+    }
+
+    /**
+     * 判断是否具有某个url的访问权限
+     * @return
+     */
+    public boolean hasUrlAcl(String url){
+        //先判断是不是超级管理员vczz
+        if (isSuperAdmin(RequestHolder.getCurrentUser().getId())){
+            return true;
+        }
+        //取出url对应的权限点acl   一个url可能有多个权限点都可以访问
+        List<SysAcl> aclList = sysAclMapper.getByUrl(url);
+        if (CollectionUtils.isEmpty(aclList)){
+            //证明权限管理都不care这个url，所以都能访问
+            return true;
+        }
+        //当前用户已有权限点
+        List<SysAcl> userAclList = getUserAclList(RequestHolder.getCurrentUser().getId());
+        Set<Integer> userAclIdSet = userAclList.stream().map(acl -> acl.getId()).collect(Collectors.toSet());
+        //变量，看是否存在一个有效的权限点
+        boolean hasValidAcl = false;
+        for (SysAcl acl : aclList){
+            //遍历aclList
+            if (acl == null || acl.getStatus() != 1){
+                //如果权限点不存在或者无效，就返回true,不需要校验
+                continue;
+            }
+            //只要一个有效就是true
+            hasValidAcl = true;
+            if (userAclIdSet.contains(acl.getId())){
+                //只要用户有一个权限点，就有访问权限
+                return true;
+            }
+        }
+        if (!hasValidAcl){
+            //如果不存在有效的权限点,就证明该url没啥用
+            return true;
+        }
+        return false;
+
     }
 
 
