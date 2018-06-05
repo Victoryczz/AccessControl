@@ -1,7 +1,12 @@
 package seu.vczz.ac.dao;
 
+import org.apache.ibatis.annotations.Param;
+import seu.vczz.ac.beans.PageQuery;
+import seu.vczz.ac.dto.SearchLogDto;
 import seu.vczz.ac.model.SysLog;
 import seu.vczz.ac.model.SysLogWithBLOBs;
+
+import java.util.List;
 
 public interface SysLogMapper {
     int deleteByPrimaryKey(Integer id);
@@ -17,4 +22,8 @@ public interface SysLogMapper {
     int updateByPrimaryKeyWithBLOBs(SysLogWithBLOBs record);
 
     int updateByPrimaryKey(SysLog record);
+
+    int countBySearchDto(@Param("dto")SearchLogDto searchLogDto);
+
+    List<SysLogWithBLOBs> getPageListBySearchDto(@Param("dto")SearchLogDto dto, @Param("page")PageQuery page);
 }

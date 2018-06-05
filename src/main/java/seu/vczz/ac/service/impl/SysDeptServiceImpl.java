@@ -2,7 +2,6 @@ package seu.vczz.ac.service.impl;
 
 import com.google.common.base.Preconditions;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,11 +12,10 @@ import seu.vczz.ac.exception.ParamException;
 import seu.vczz.ac.model.SysDept;
 import seu.vczz.ac.param.DeptParam;
 import seu.vczz.ac.service.ISysDeptService;
+import seu.vczz.ac.service.ISysLogService;
 import seu.vczz.ac.util.BeanValidatorUtil;
 import seu.vczz.ac.util.IpUtil;
 import seu.vczz.ac.util.LevelUtil;
-
-import java.lang.reflect.Parameter;
 import java.util.Date;
 import java.util.List;
 
@@ -31,6 +29,8 @@ public class SysDeptServiceImpl implements ISysDeptService {
     private SysDeptMapper sysDeptMapper;
     @Autowired
     private SysUserMapper sysUserMapper;
+    @Autowired
+    private ISysLogService iSysLogService;
 
     /**
      * 新增保存部门
@@ -53,6 +53,8 @@ public class SysDeptServiceImpl implements ISysDeptService {
         dept.setOperateIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
         dept.setOperateTime(new Date());
         sysDeptMapper.insertSelective(dept);
+
+        iSysLogService.saveDeptLog(null, dept);
     }
     //校验同部门下有没有相同名称或id的部门
     private boolean checkExist(Integer parentId, String deptName, Integer deptId){
@@ -90,6 +92,8 @@ public class SysDeptServiceImpl implements ISysDeptService {
         after.setOperateTime(new Date());
         //使用事务更新，如果更新了当前部门，则子部门需要同时更新
         updateWithChild(before, after);
+
+        iSysLogService.saveDeptLog(before, after);
 
     }
     //因为当更新了次部门，子部门需要同时更新
@@ -141,6 +145,7 @@ public class SysDeptServiceImpl implements ISysDeptService {
         //即不存在用户，也不存在部门就删除
         sysDeptMapper.deleteByPrimaryKey(deptId);
 
+        iSysLogService.saveDeptLog(dept, null);
     }
 
 

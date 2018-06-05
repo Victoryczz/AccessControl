@@ -1,6 +1,7 @@
 package seu.vczz.ac.service.impl;
 
 import com.google.common.base.Preconditions;
+import org.springframework.aop.AfterAdvice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import seu.vczz.ac.common.RequestHolder;
@@ -8,6 +9,7 @@ import seu.vczz.ac.dao.SysRoleMapper;
 import seu.vczz.ac.exception.ParamException;
 import seu.vczz.ac.model.SysRole;
 import seu.vczz.ac.param.RoleParam;
+import seu.vczz.ac.service.ISysLogService;
 import seu.vczz.ac.service.ISysRoleService;
 import seu.vczz.ac.util.BeanValidatorUtil;
 import seu.vczz.ac.util.IpUtil;
@@ -22,6 +24,8 @@ public class SysRoleServiceImpl implements ISysRoleService {
 
     @Autowired
     private SysRoleMapper sysRoleMapper;
+    @Autowired
+    private ISysLogService iSysLogService;
 
     /**
      * 新增保存角色
@@ -41,6 +45,8 @@ public class SysRoleServiceImpl implements ISysRoleService {
         role.setOperateIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
         role.setOperateTime(new Date());
         sysRoleMapper.insertSelective(role);
+
+        iSysLogService.saveRoleLog(null, role);
     }
     //校验是否存在
     private boolean checkExist(Integer id, String name){
@@ -68,6 +74,8 @@ public class SysRoleServiceImpl implements ISysRoleService {
         after.setOperateIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
         after.setOperateTime(new Date());
         sysRoleMapper.updateByPrimaryKeySelective(after);
+
+        iSysLogService.saveRoleLog(before, after);
     }
 
     /**

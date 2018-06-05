@@ -30,7 +30,7 @@
     delete from sys_user
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="seu.vczz.ac.model.SysUser" >
+  <insert id="insert" parameterType="seu.vczz.ac.model.SysUser" keyProperty="id" useGeneratedKeys="true">
     insert into sys_user (id, username, telephone, 
       mail, password, dept_id, 
       status, remark, operator, 
@@ -40,7 +40,7 @@
       #{status,jdbcType=INTEGER}, #{remark,jdbcType=VARCHAR}, #{operator,jdbcType=VARCHAR}, 
       #{operateTime,jdbcType=TIMESTAMP}, #{operateIp,jdbcType=VARCHAR})
   </insert>
-  <insert id="insertSelective" parameterType="seu.vczz.ac.model.SysUser" >
+  <insert id="insertSelective" parameterType="seu.vczz.ac.model.SysUser" keyProperty="id" useGeneratedKeys="true">
     insert into sys_user
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >

@@ -24,7 +24,7 @@
     delete from sys_role_acl
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="seu.vczz.ac.model.SysRoleAcl" >
+  <insert id="insert" parameterType="seu.vczz.ac.model.SysRoleAcl" keyProperty="id" useGeneratedKeys="true">
     insert into sys_role_acl (id, role_id, acl_id, 
       operator, operate_time, operate_ip
       )
@@ -32,7 +32,7 @@
       #{operator,jdbcType=VARCHAR}, #{operateTime,jdbcType=TIMESTAMP}, #{operateIp,jdbcType=VARCHAR}
       )
   </insert>
-  <insert id="insertSelective" parameterType="seu.vczz.ac.model.SysRoleAcl" >
+  <insert id="insertSelective" parameterType="seu.vczz.ac.model.SysRoleAcl" keyProperty="id" useGeneratedKeys="true">
     insert into sys_role_acl
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >

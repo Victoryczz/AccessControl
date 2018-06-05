@@ -10,11 +10,14 @@ import seu.vczz.ac.dao.SysUserMapper;
 import seu.vczz.ac.exception.ParamException;
 import seu.vczz.ac.model.SysUser;
 import seu.vczz.ac.param.UserParam;
+import seu.vczz.ac.service.ISysLogService;
 import seu.vczz.ac.service.ISysUserService;
 import seu.vczz.ac.util.BeanValidatorUtil;
 import seu.vczz.ac.util.IpUtil;
 import seu.vczz.ac.util.MD5Util;
 import seu.vczz.ac.util.PasswordUtil;
+import sun.management.Agent;
+
 import java.util.Date;
 import java.util.List;
 
@@ -26,6 +29,8 @@ public class SysUserServiceImpl implements ISysUserService {
 
     @Autowired
     private SysUserMapper sysUserMapper;
+    @Autowired
+    private ISysLogService iSysLogService;
 
     /**
      * 新增保存用户
@@ -57,6 +62,8 @@ public class SysUserServiceImpl implements ISysUserService {
         //todo: sendEmail
 
         sysUserMapper.insertSelective(user);
+
+        iSysLogService.saveUserLog(null, user);
     }
     //传入id的原因是登陆的时候直接使用该方法进行校验
     //检查邮箱
@@ -97,6 +104,8 @@ public class SysUserServiceImpl implements ISysUserService {
         after.setOperateTime(new Date());
         //更新
         sysUserMapper.updateByPrimaryKeySelective(after);
+
+        iSysLogService.saveUserLog(before, after);
     }
 
     /**

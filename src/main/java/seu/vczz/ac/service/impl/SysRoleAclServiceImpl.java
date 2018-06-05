@@ -12,6 +12,7 @@ import seu.vczz.ac.dao.SysLogMapper;
 import seu.vczz.ac.dao.SysRoleAclMapper;
 import seu.vczz.ac.model.SysLogWithBLOBs;
 import seu.vczz.ac.model.SysRoleAcl;
+import seu.vczz.ac.service.ISysLogService;
 import seu.vczz.ac.service.ISysRoleAclService;
 import seu.vczz.ac.util.IpUtil;
 import seu.vczz.ac.util.JsonUtil;

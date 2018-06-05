@@ -31,7 +31,7 @@
     delete from sys_acl
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="seu.vczz.ac.model.SysAcl" >
+  <insert id="insert" parameterType="seu.vczz.ac.model.SysAcl" keyProperty="id" useGeneratedKeys="true">
     insert into sys_acl (id, code, name, 
       acl_module_id, url, type, 
       status, seq, remark, 
@@ -43,7 +43,7 @@
       #{operator,jdbcType=VARCHAR}, #{operateTime,jdbcType=TIMESTAMP}, #{operateIp,jdbcType=VARCHAR}
       )
   </insert>
-  <insert id="insertSelective" parameterType="seu.vczz.ac.model.SysAcl" >
+  <insert id="insertSelective" parameterType="seu.vczz.ac.model.SysAcl" keyProperty="id" useGeneratedKeys="true">
     insert into sys_acl
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >

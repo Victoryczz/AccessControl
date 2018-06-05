@@ -12,6 +12,7 @@ import seu.vczz.ac.exception.ParamException;
 import seu.vczz.ac.model.SysAcl;
 import seu.vczz.ac.param.AclParam;
 import seu.vczz.ac.service.ISysAclService;
+import seu.vczz.ac.service.ISysLogService;
 import seu.vczz.ac.util.BeanValidatorUtil;
 import seu.vczz.ac.util.IpUtil;
 import java.text.SimpleDateFormat;
@@ -26,6 +27,8 @@ public class SysAclServiceImpl implements ISysAclService {
 
     @Autowired
     private SysAclMapper sysAclMapper;
+    @Autowired
+    private ISysLogService iSysLogService;
 
     /**
      * 新增保存权限点
@@ -46,6 +49,8 @@ public class SysAclServiceImpl implements ISysAclService {
         sysAcl.setOperateTime(new Date());
         sysAcl.setOperateIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
         sysAclMapper.insertSelective(sysAcl);
+
+        iSysLogService.saveAclLog(null, sysAcl);
     }
     //检查是否有重名
     private boolean checkExist(Integer id ,Integer aclModuleId, String name){
@@ -78,6 +83,8 @@ public class SysAclServiceImpl implements ISysAclService {
         after.setOperateIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
 
         sysAclMapper.updateByPrimaryKeySelective(after);
+
+        iSysLogService.saveAclLog(before, after);
     }
 
     /**

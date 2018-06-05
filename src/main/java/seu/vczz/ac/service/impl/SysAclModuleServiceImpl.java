@@ -12,6 +12,7 @@ import seu.vczz.ac.exception.ParamException;
 import seu.vczz.ac.model.SysAclModule;
 import seu.vczz.ac.param.AclModuleParam;
 import seu.vczz.ac.service.ISysAclModuleService;
+import seu.vczz.ac.service.ISysLogService;
 import seu.vczz.ac.util.BeanValidatorUtil;
 import seu.vczz.ac.util.IpUtil;
 import seu.vczz.ac.util.LevelUtil;
@@ -30,6 +31,8 @@ public class SysAclModuleServiceImpl implements ISysAclModuleService {
     private SysAclModuleMapper sysAclModuleMapper;
     @Autowired
     private SysAclMapper sysAclMapper;
+    @Autowired
+    private ISysLogService iSysLogService;
 
     /**
      * 新增保存权限模块信息
@@ -52,6 +55,8 @@ public class SysAclModuleServiceImpl implements ISysAclModuleService {
         aclModule.setOperateTime(new Date());
         //插入
         sysAclModuleMapper.insertSelective(aclModule);
+
+        iSysLogService.saveAclModuleLog(null, aclModule);
 
     }
     //校验同部门下有没有相同名称或id的部门
@@ -89,6 +94,8 @@ public class SysAclModuleServiceImpl implements ISysAclModuleService {
         after.setOperateTime(new Date());
         //如果模块下存在子模块，需要批量更新
         updateWithChild(before, after);
+
+        iSysLogService.saveAclModuleLog(before, after);
 
     }
     //更新子模块

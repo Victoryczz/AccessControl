@@ -28,7 +28,7 @@
     delete from sys_acl_module
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="seu.vczz.ac.model.SysAclModule" >
+  <insert id="insert" parameterType="seu.vczz.ac.model.SysAclModule" keyProperty="id" useGeneratedKeys="true">
     insert into sys_acl_module (id, name, parent_id, 
       level, seq, status, 
       remark, operator, operate_time, 
@@ -38,7 +38,7 @@
       #{remark,jdbcType=VARCHAR}, #{operator,jdbcType=VARCHAR}, #{operateTime,jdbcType=TIMESTAMP}, 
       #{operateIp,jdbcType=VARCHAR})
   </insert>
-  <insert id="insertSelective" parameterType="seu.vczz.ac.model.SysAclModule" >
+  <insert id="insertSelective" parameterType="seu.vczz.ac.model.SysAclModule" keyProperty="id" useGeneratedKeys="true">
     insert into sys_acl_module
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >
